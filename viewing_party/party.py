@@ -34,26 +34,26 @@ def watch_movie(user_data, title):
 def get_watched_avg_rating(user_data):
     if not user_data["watched"]:
         return 0
-    
+
     total_rating = 0
 
     for movie in user_data["watched"]:
         total_rating += movie["rating"]
-    
+
     return total_rating / len(user_data["watched"])
 
 
 def get_most_watched_genre(user_data):
     if user_data["watched"] is None:
         return None
-        
+
     genre_avg = {}
 
     for movie in user_data["watched"]:
         genre = movie["genre"]
         if genre in genre_avg:
             genre_avg[genre] += 1
-        else: 
+        else:
             genre_avg[genre] = 1
 
     most_watched_genre = None
@@ -62,7 +62,7 @@ def get_most_watched_genre(user_data):
     for genre, count in genre_avg.items():
         if count > max_count:
             most_watched_genre = genre
-            max_count = count  
+            max_count = count
     return most_watched_genre
 
 
@@ -179,9 +179,42 @@ def get_friends_unique_watched(user_data):
 
     return friends_unique_movies_list
 
-    # -----------------------------------------
-    # ------------- WAVE 4 --------------------
-    # -----------------------------------------
+# -----------------------------------------
+# ------------- WAVE 4 --------------------
+# -----------------------------------------
+
+
+def get_available_recs(user_data):
+    """
+    Determines a list of movie recommendations for the user based on their friends' watched movies
+    and the streaming services they are subscribed to.
+
+    Parameters:
+    user_data (dict): A dictionary containing the user's data with the following fields:
+        - "subscriptions" (list of str): A list of streaming service names that the user has access to.
+        - "friends" (list of dicts): Each dictionary represents a friend and contains:
+            -  "watched" (list of dicts): Each dictionary represents a movie with:
+                - "title" (str): The title of the movie.
+                - "host" (str): The streaming service hosting the movie.
+
+    Returns:
+    list of dict: A list of recommended movies where:
+        - The user has not watched the movie.
+        - At least one friend has watched it.
+        - The movie is available on a streaming service in the user's subscriptions.
+
+    Written by: Mariya Mokrynska
+    """
+    recommended_movies_list = []
+    user_watched_titles = get_user_movies(user_data)
+    friends_unique_movies_list = get_friends_unique_watched(user_data)
+
+    for friend_movie in friends_unique_movies_list:
+        if friend_movie["title"] not in user_watched_titles and friend_movie["host"] in user_data["subscriptions"]:
+            recommended_movies_list.append(friend_movie)
+
+    return recommended_movies_list
+
 
 # -----------------------------------------
 # ------------- WAVE 5 --------------------
@@ -191,7 +224,7 @@ def get_new_rec_by_genre(user_data):
 
     if not most_watched_genre:
         return []
-    
+
     rec_movies = []
     watched_titles = {movie["title"] for movie in user_data["watched"]}
     seen_movies = set()
@@ -199,7 +232,7 @@ def get_new_rec_by_genre(user_data):
     for friend in user_data["friends"]:
         for movie in friend["watched"]:
             if (
-                movie["genre"] == most_watched_genre and 
+                movie["genre"] == most_watched_genre and
                 movie["title"] not in watched_titles and
                 movie["title"] not in seen_movies
             ):
@@ -218,7 +251,7 @@ def get_rec_from_favorites(user_data):
             if movie in friend["watched"]:
                 movie_in_favorites = False
                 break
-        
+
         if movie_in_favorites:
             rec_movies.append(movie)
 
