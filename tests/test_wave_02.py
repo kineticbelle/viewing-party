@@ -3,7 +3,7 @@ from viewing_party.party import *
 from tests.test_constants import *
 
 
-@pytest.mark.skip()
+#@pytest.mark.skip()
 def test_calculates_watched_average_rating():
     # Arrange
     janes_data = clean_wave_2_data()
@@ -30,7 +30,7 @@ def test_empty_watched_average_rating_is_zero():
 
 #@pytest.mark.skip()
 
-@pytest.mark.skip()
+#@pytest.mark.skip()
 def test_most_watched_genre():
     # Arrange
     janes_data = clean_wave_2_data()
@@ -44,7 +44,7 @@ def test_most_watched_genre():
 
 #@pytest.mark.skip()
 
-@pytest.mark.skip()
+#@pytest.mark.skip()
 def test_most_watched_genre_order_mixed():
     # Arrange
     janes_data = clean_wave_2b_data()
@@ -58,7 +58,7 @@ def test_most_watched_genre_order_mixed():
 
 #@pytest.mark.skip()
 
-@pytest.mark.skip()
+#@pytest.mark.skip()
 def test_genre_is_None_if_empty_watched():
     # Arrange
     janes_data = {
