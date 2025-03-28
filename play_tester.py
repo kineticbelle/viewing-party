@@ -17,13 +17,14 @@ pp.pprint(FANTASY_2)
 # print("\n-----Wave 02 user_data-----")
 # pp.pprint(clean_wave_2_data())
 
-#print("\n-----Wave 03 user_data-----")
-#pp.pprint(clean_wave_3_data())
+print("\n-----Wave 03 user_data-----")
+pp.pprint(clean_wave_3_data())
+
 
 # Wave 04 user data
-#print("\n-----Wave 04 user_data-----")
-#pp.pprint(clean_wave_4_data())
+# print("\n-----Wave 04 user_data-----")
+# pp.pprint(clean_wave_4_data())
 
 # Wave 05 user data
-#print("\n-----Wave 05 user_data-----")
-#pp.pprint(clean_wave_5_data())
+# print("\n-----Wave 05 user_data-----")
+# pp.pprint(clean_wave_5_data())
