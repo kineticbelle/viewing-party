@@ -69,21 +69,37 @@ def get_most_watched_genre(user_data):
 # -----------------------------------------
 # ------------- WAVE 3 --------------------
 # -----------------------------------------
+def get_user_movies(user_data):
+    """
+    Helper function to get a set of movie titles that the user has watched.
+
+    Args:
+    user_data (dict): Contains a 'watched' list with movie details.
+
+    Returns:
+    set: A set of movie titles the user has watched.
+
+    Written by: Mariya Mokrynska
+
+    Written by: Mariya Mokrynska
+    """
+    user_watched_titles = set()
+
+    for movie in user_data["watched"]:
+        user_watched_titles.add(movie["title"])
+
+    return user_watched_titles
+
+
 def get_friends_movies(user_data):
     """
     Helper function to get a set of movie titles that the user's friends have watched.
 
     Args:
-        user_data (dict): A dictionary containing the user's information. 
-                        It has the following structure:
-                        - 'watched': A list of dictionaries, each representing a movie 
-                        the user has watched (with 'title', 'genre', and 'rating' keys).
-                        - 'friends': A list of dictionaries, where each dictionary represents a friend. 
-                        Each friend has a 'watched' key, which is a list of movies they have watched 
-                        (with 'title', 'genre', and 'rating' keys).
+    user_data (dict): Contains a list of 'friends', each with a 'watched' list of movies.
 
     Returns:
-        set: A set of movie titles (strings) that the user's friends have watched.
+    set: A set of movie titles watched by the user's friends.
 
     Written by: Mariya Mokrynska
     """
@@ -96,25 +112,10 @@ def get_friends_movies(user_data):
     return friends_watched_titles
 
 
+""" 
+# version 1
+# Written by: Mariya Mokrynska
 def get_unique_watched(user_data):
-    """
-    Returns a list of movies that the user has watched but none of their friends have watched.
-
-    Args:
-        user_data (dict): A dictionary containing the user's information. 
-                        It has the following structure:
-                        - 'watched': A list of dictionaries, each representing a movie 
-                        the user has watched (with 'title', 'genre', and 'rating' keys).
-                        - 'friends': A list of dictionaries, where each dictionary represents a friend. 
-                        Each friend has a 'watched' key, which is a list of movies they have watched 
-                        (with 'title', 'genre', and 'rating' keys).
-
-    Returns:
-        list: A list of dictionaries, each representing a movie that the user has watched, 
-            but none of their friends have watched.
-
-    Written by: Mariya Mokrynska
-    """
     unique_movies_list = []
     friends_watched_titles = get_friends_movies(user_data)
     for movie in user_data["watched"]:
@@ -122,51 +123,40 @@ def get_unique_watched(user_data):
             unique_movies_list.append(movie)
 
     return unique_movies_list
+ """
+
+# version 2
 
 
-def get_user_movies(user_data):
+def get_unique_watched(user_data):
     """
-    Helper function to get a set of movie titles that the user has watched.
+    Returns a list of movies the user has watched, but none of their friends have.
 
     Args:
-        user_data (dict): A dictionary containing the user's information. 
-                        It has the following structure:
-                        - 'watched': A list of dictionaries, each representing a movie 
-                        the user has watched (with 'title', 'genre', and 'rating' keys).
+        user_data (dict): Contains 'watched' (movies the user watched) and 'friends' (friend's watched movies).
 
     Returns:
-        set: A set of movie titles (strings) that the user has watched.
+        list: Movies the user has watched but not their friends.
 
     Written by: Mariya Mokrynska
     """
-    user_watched_titles = set()
+    unique_movies_list = []
+    user_watched_titles = get_user_movies(user_data)
+    friends_watched_titles = get_friends_movies(user_data)
+
+    # Get the set difference: user watched but friends have not
+    unique_titles = user_watched_titles - friends_watched_titles
 
     for movie in user_data["watched"]:
-        user_watched_titles.add(movie["title"])
+        if movie["title"] in unique_titles:
+            unique_movies_list.append(movie)
 
-    return user_watched_titles
+    return unique_movies_list
 
 
-def get_friends_unique_watched(user_data):
-    """
-    Returns a list of movies that at least one of the user's friends has watched, 
-    but the user has not watched.
-
-    Args:
-        user_data (dict): A dictionary containing the user's information. 
-                        It has the following structure:
-                        - 'watched': A list of dictionaries, each representing a movie 
-                        the user has watched (with 'title', 'genre', and 'rating' keys).
-                        - 'friends': A list of dictionaries, where each dictionary represents a friend. 
-                        Each friend has a 'watched' key, which is a list of movies they have watched 
-                        (with 'title', 'genre', and 'rating' keys).
-
-    Returns:
-        list: A list of dictionaries, each representing a movie that at least one of the user's 
-            friends has watched, but the user has not watched.
-
-    Written by: Mariya Mokrynska
-    """
+# version 1
+# Written by: Mariya Mokrynska
+""" def get_friends_unique_watched(user_data):
     friends_unique_movies_list = []
     user_watched_titles = get_user_movies(user_data)
     previous_titles = set()
@@ -177,7 +167,40 @@ def get_friends_unique_watched(user_data):
                 friends_unique_movies_list.append(movie)
                 previous_titles.add(movie["title"])
 
-    return friends_unique_movies_list
+    return friends_unique_movies_list """
+
+# version 2
+
+
+def get_friends_unique_watched(user_data):
+    """
+    Returns a list of movies that at least one of the user's friends has watched, but the user has not.
+
+    Args:
+        user_data (dict): A dictionary containing the user's watched movies and friends' watched movies.
+
+    Returns:
+        list: A list of movie dictionaries that friends have watched but the user has not.
+
+    Written by: Mariya Mokrynska
+    """
+    friends_watched_titles = get_friends_movies(user_data)
+    user_watched_titles = get_user_movies(user_data)
+
+    # Get the set difference: movies that friends have watched but the user has not
+    unique_titles = friends_watched_titles - user_watched_titles
+
+    unique_movies = []
+    added_titles = set()
+
+    for friend in user_data["friends"]:
+        for movie in friend["watched"]:
+            if movie["title"] in unique_titles and movie["title"] not in added_titles:
+                unique_movies.append(movie)
+                added_titles.add(movie["title"])
+
+    return unique_movies
+
 
 # -----------------------------------------
 # ------------- WAVE 4 --------------------
@@ -186,22 +209,15 @@ def get_friends_unique_watched(user_data):
 
 def get_available_recs(user_data):
     """
-    Determines a list of movie recommendations for the user based on their friends' watched movies
-    and the streaming services they are subscribed to.
+    Recommends movies the user hasn't watched but their friends have, 
+    available on the user's subscribed streaming services.
 
-    Parameters:
-    user_data (dict): A dictionary containing the user's data with the following fields:
-        - "subscriptions" (list of str): A list of streaming service names that the user has access to.
-        - "friends" (list of dicts): Each dictionary represents a friend and contains:
-            -  "watched" (list of dicts): Each dictionary represents a movie with:
-                - "title" (str): The title of the movie.
-                - "host" (str): The streaming service hosting the movie.
+    Args:
+    user_data (dict): Contains 'subscriptions' (list of str) and 'friends' (list of dicts with 'watched' movies).
 
     Returns:
-    list of dict: A list of recommended movies where:
-        - The user has not watched the movie.
-        - At least one friend has watched it.
-        - The movie is available on a streaming service in the user's subscriptions.
+    list of dict: Recommended movies that the user hasn't watched, are watched by friends, 
+                and are available on the user's subscriptions.
 
     Written by: Mariya Mokrynska
     """
